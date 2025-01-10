@@ -1,2 +1,6 @@
 # FUB_FocusArea_AdvAlg
-Our assignment focus area in Bioinformatics
+Freie University Berlin
+Bioinformatics WiSe24/25
+
+Course: Focus areas in Bioinformatics
+Module: Advanced Algorithm
