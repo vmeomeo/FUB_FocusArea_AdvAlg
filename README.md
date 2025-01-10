@@ -1,6 +1,10 @@
-# FUB_FocusArea_AdvAlg
-Freie University Berlin
-Bioinformatics WiSe24/25
+# FU Berlin: Focus Areas in Bioinformatics - Advanced Algorithms
 
-Course: Focus areas in Bioinformatics
-Module: Advanced Algorithm
+*Freie University Berlin*
+*Bioinformatics WiSe24/25*
+
+Group name: Nucleotide Ninjas # This is just a placeholder name
+
+**Directory:**
+
+Assignment 01:  suffix array algorithms
