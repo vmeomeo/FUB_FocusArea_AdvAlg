@@ -10,6 +10,34 @@
 // prints out all occurences of query inside of ref
 void findOccurences(std::vector<seqan3::dna5> const& ref, std::vector<seqan3::dna5> const& query) {
     //!TODO ImplementMe
+    std::vector<size_t> positions; // Store the start pos of matches
+    size_t query_size = query.size();
+    // Naive search: Slide a window over the ref & compare to queries
+    for (size_t i = 0; i <= ref.size() - query_size; i++) {
+        bool match = true;
+
+        //Compare each char in the window to the query
+        for (size_t j = 0; j < query_size; j++) {
+            if (ref[i + j] != query[j] {
+                match = false;
+                break;
+            }
+        }
+
+        if (match) {
+            positions.push_back(i); // Record the start pos of match
+        }
+    }
+    // Output the results
+    if (positions.empty()) {
+        seqan3::debug_stream << "Query not found in the reference.\n";
+    } else {
+        seqan3::debug_stream << "Query found at positions: ";
+        for (auto pos : positions) {
+            seqan3::debug_stream << pos << " ";
+        }
+        seqan3::debug_stream << "\n";
+    }
 }
 
 int main(int argc, char const* const* argv) {
