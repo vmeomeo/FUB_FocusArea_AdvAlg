@@ -7,6 +7,8 @@
 #include <seqan3/io/sequence_file/all.hpp>
 #include <seqan3/search/fm_index/fm_index.hpp>
 #include <seqan3/search/search.hpp>
+#include <vector>
+#include <algorithm>
 
 int main(int argc, char const* const* argv) {
     seqan3::argument_parser parser{"suffixarray_search", argc, argv, seqan3::update_notifications::off};
@@ -67,10 +69,31 @@ int main(int argc, char const* const* argv) {
     //      To make the `reference` compatible with libdivsufsort you can simply
     //      cast it by calling:
     //      `sauchar_t const* str = reinterpret_cast<sauchar_t const*>(reference.data());`
-
+    sauchar_t const* str = reinterpret_cast<sauchar_t const*>(reference.data());
+    divsufsort(str, suffixarray.data(), reference.size()); //construct suffix arr
+    
+    // Binary search for each query
     for (auto& q : queries) {
         //!TODO !ImplementMe apply binary search and find q  in reference using binary search on `suffixarray`
         // You can choose if you want to use binary search based on "naive approach", "mlr-trick", "lcp"
+        std::string query_string(q.begin(), q.end());
+        std::string ref_str(reference.begin(), reference.end());
+
+        auto compare = [&](int suffix_start, const std::string& query_str) {
+            return ref_str.compare(suffix_start, query_str.size(), query_str) < 0;
+        };
+        auto lower = std::lower_bound(suffixarray.begin(), suffixarray.end(), query_string, compare);
+        auto upper = std::upper_bound(suffixarray.begin(), suffixarray.end(), query_string, compare);
+        
+        if (lower == upper) {
+            seqan3::debug_stream << "Query not found.\n";
+        } else {
+            seqan3::debug_stream << "Query found at positions: ";
+            for (auto it = lower; it != upper; ++it) {
+                seqan3::debug_stream << *it << " ";
+            }
+            seqan3::debug_stream << "\n";
+        }
     }
 
     return 0;
