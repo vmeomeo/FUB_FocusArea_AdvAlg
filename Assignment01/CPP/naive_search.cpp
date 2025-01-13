@@ -18,7 +18,7 @@ void findOccurences(std::vector<seqan3::dna5> const& ref, std::vector<seqan3::dn
 
         //Compare each char in the window to the query
         for (size_t j = 0; j < query_size; j++) {
-            if (ref[i + j] != query[j] {
+            if (ref[i + j] != query[j]) {
                 match = false;
                 break;
             }
