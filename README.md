@@ -3,7 +3,7 @@
 *Freie University Berlin*
 *Bioinformatics WiSe24/25*
 
-Group name: Nucleotide Ninjas # This is just a placeholder name # Another suggestion von Emmy :D "The Sequence Seekers"
+Group name: Seek++ # Suggest by Nico #Nucleotide Ninjas # Another suggestion von Emmy :D "The Sequence Seekers"
 
 **Directory:**
 
