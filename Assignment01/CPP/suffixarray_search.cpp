@@ -76,14 +76,33 @@ int main(int argc, char const* const* argv) {
     for (auto& q : queries) {
         //!TODO !ImplementMe apply binary search and find q  in reference using binary search on `suffixarray`
         // You can choose if you want to use binary search based on "naive approach", "mlr-trick", "lcp"
-        std::string query_string(q.begin(), q.end());
-        std::string ref_str(reference.begin(), reference.end());
+        // std::string query_string(q.begin(), q.end());
+        // std::string ref_str(reference.begin(), reference.end());
 
-        auto compare = [&](int suffix_start, const std::string& query_str) {
-            return ref_str.compare(suffix_start, query_str.size(), query_str) < 0;
+        auto compare_lower = [&](int suffix_start, const auto& query_str) {
+           // return ref_str.compare(suffix_start, query_str.size(), query_str) < 0;
+            for (int i=0; i<query_str.size() && (suffix_start + i) < reference.size(); i++) {
+                if (reference[suffix_start+i] < query_str[i]){return true;}
+                if (reference[suffix_start+i] > query_str[i]){return false;}
+            }
+            return false;
         };
-        auto lower = std::lower_bound(suffixarray.begin(), suffixarray.end(), query_string, compare);
-        auto upper = std::upper_bound(suffixarray.begin(), suffixarray.end(), query_string, compare);
+
+        auto compare_upper = [&](const auto& query_str, int suffix_start) {
+           // return ref_str.compare(suffix_start, query_str.size(), query_str) < 0;
+            for (int i=0; i<query_str.size() && (suffix_start + i) < reference.size(); i++) {
+                if (reference[suffix_start+i] > query_str[i]){return true;}
+                if (reference[suffix_start+i] < query_str[i]){return false;}
+            }
+            return false;
+        };
+
+
+
+        auto lower = std::lower_bound(
+            suffixarray.begin(), suffixarray.end(), q, compare_lower);
+        auto upper = std::upper_bound(
+            suffixarray.begin(), suffixarray.end(), q, compare_upper);
         
         if (lower == upper) {
             seqan3::debug_stream << "Query not found.\n";
