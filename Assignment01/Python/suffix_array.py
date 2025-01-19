@@ -1,27 +1,15 @@
 import argparse
 import gzip
+import iv2py as iv
 
 def read_fasta(file_path):
-    """Reads sequences from a FASTA file (supports gzip)."""
-    sequences = []
-    with gzip.open(file_path, 'rt') as f:
-        sequence = []
-        for line in f:
-            line = line.strip()
-            if line.startswith(">"):  # Header line
-                if sequence:  # If there's a sequence collected, add it
-                    sequences.append("".join(sequence))
-                    sequence = []  # Reset for the next sequence
-            else:
-                sequence.append(line)  # Append sequence line
-        if sequence:  # Add the last sequence if present
-            sequences.append("".join(sequence))
-    return sequences
+    sequence=[]
+    for record in iv.fasta.reader(file_path):
+        sequence.append(record)
+    return sequence
 
 
-def build_suffix_array(sequence):
-    """Builds the suffix array for the given sequence."""
-    return sorted(range(len(sequence)), key=lambda i: sequence[i:])
+
 
 def binary_search_suffix_array(sequence, suffix_array, read):
     """Performs binary search to find the range of matches for the read in the suffix array."""
@@ -29,7 +17,7 @@ def binary_search_suffix_array(sequence, suffix_array, read):
     # Find the lower bound
     while lo < hi:
         mid = (lo + hi) // 2
-        if sequence[suffix_array[mid]:].startswith(read): #If it found already the right sequence
+        if sequence[suffix_array[mid]:].startswith(read):
             hi = mid
         else:
             if sequence[suffix_array[mid]:] < read:
@@ -50,7 +38,7 @@ def binary_search_suffix_array(sequence, suffix_array, read):
     return suffix_array[start:end]
 
 def main():
-    parser = argparse.ArgumentParser(description="Naive search algorithm for DNA sequences.")
+    parser = argparse.ArgumentParser(description="Search algorithm for DNA sequences using a portion of the reference.")
     parser.add_argument("-reference", type=str, required=True,
                         help="Path to the file containing the reference sequence (FASTA format).")
     parser.add_argument("-query", type=str, required=True,
@@ -62,22 +50,25 @@ def main():
 
     try:
         # Read reference and query sequences
-        reference_sequences = read_fasta(args.reference)
+        reference_sequence = read_fasta(args.reference)
         query_sequences = read_fasta(args.query)
 
         # Combine all reference sequences into a single string
-        reference_sequence = "".join(reference_sequences)
+
+        sa = iv.create_suffixarray(reference_sequence)
+        print('Suffix array done')
+
 
         # Ensure query count does not exceed available queries
         if args.query_ct > len(query_sequences):
             print(f"Error: The specified query count ({args.query_ct}) exceeds the number of queries available ({len(query_sequences)}).")
             return
-        suffix_array= build_suffix_array(reference_sequence)
-        # Perform naive search for each query sequence
+
+        # Perform search for each query sequence
         for i in range(args.query_ct):
             query = query_sequences[i]
-            positions = binary_search_suffix_array(reference_sequence,suffix_array, query)
-            print(f"Positions: {positions}")
+            positions = binary_search_suffix_array(reference_sequence, sa, query)
+            print(f"Query {i+1}: Positions {positions}")
 
     except FileNotFoundError as e:
         print(f"Error: {e}")
@@ -86,5 +77,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
