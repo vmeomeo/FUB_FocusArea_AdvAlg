@@ -1,29 +1,35 @@
 import argparse
 import gzip
 
-
 def read_fasta(file_path):
-    """Reads a FASTA file and returns the sequence as a string."""
-    sequence = []
-    with gzip.open(file_path, "rt") if file_path.endswith(".gz") else open(file_path, "r") as f:
+    """Reads sequences from a FASTA file (supports gzip)."""
+    sequences = []
+    with gzip.open(file_path, 'rt') as f:
+        sequence = []
         for line in f:
-            if not line.startswith(">"):  # Ignore header lines
-                sequence.append(line.strip())
-    return "".join(sequence)
+            line = line.strip()
+            if line.startswith(">"):  # Header line
+                if sequence:  # If there's a sequence collected, add it
+                    sequences.append("".join(sequence))
+                    sequence = []  # Reset for the next sequence
+            else:
+                sequence.append(line)  # Append sequence line
+        if sequence:  # Add the last sequence if present
+            sequences.append("".join(sequence))
+    return sequences
 
 
-def naive_search(sequence, query):
-    """Performs naive search to find all occurrences of the query in the sequence."""
+def naive_search(reference, query):
+    """Performs naive search to find all occurrences of the query in the reference."""
     positions = []
     start = 0
     while True:
-        start = sequence.find(query, start)
+        start = reference.find(query, start)
         if start == -1:  # No more matches
             break
         positions.append(start)
         start += 1
     return positions
-
 
 def main():
     parser = argparse.ArgumentParser(description="Naive search algorithm for DNA sequences.")
@@ -38,15 +44,18 @@ def main():
 
     try:
         # Read reference and query sequences
-        reference_sequence = read_fasta(args.reference)
-        query_sequences = read_fasta(args.query).split()  # Assuming queries are on separate lines
+        reference_sequences = read_fasta(args.reference)
+        query_sequences = read_fasta(args.query)
+
+        # Combine all reference sequences into a single string
+        reference_sequence = "".join(reference_sequences)
 
         # Ensure query count does not exceed available queries
         if args.query_ct > len(query_sequences):
-            print(f"Error: The specified query count ({args.query_ct}) exceeds the number of queries in the file.")
+            print(f"Error: The specified query count ({args.query_ct}) exceeds the number of queries available ({len(query_sequences)}).")
             return
 
-        # Perform naive search for the specified number of queries
+        # Perform naive search for each query sequence
         for i in range(args.query_ct):
             query = query_sequences[i]
             positions = naive_search(reference_sequence, query)
@@ -56,7 +65,6 @@ def main():
         print(f"Error: {e}")
     except Exception as e:
         print(f"Unexpected error: {e}")
-
 
 if __name__ == "__main__":
     main()
