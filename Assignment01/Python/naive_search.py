@@ -50,7 +50,6 @@ def main():
         for i in range(args.query_ct):
             query = query_sequences[i]
             positions = naive_search(reference_sequence, query)
-            print(f"Query {i + 1}: {query}")
             print(f"Positions: {positions}")
 
     except FileNotFoundError as e:
