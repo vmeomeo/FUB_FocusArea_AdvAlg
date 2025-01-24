@@ -1,1 +1,0 @@
-/usr/bin/time -v python3 suffix_array.py -reference ../data/hg38_partial.gz -query ../data/illumina_reads_40.fasta.gz -query_ct 1
