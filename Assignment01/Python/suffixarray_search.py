@@ -88,15 +88,15 @@ def main(path_reference_genome, path_query_file, num_query):
         position = search_suffix_array(suffix_array, reference_genome, marker)
         results[marker] = position
 
-    search_time = time.time() - suffix_time
+    search_time = time.time() - start_time
     
 
     # Print the results
     for marker, position in results.items():
         if position:
             print(f"Marker '{marker}' found at position {position}.")
-            
-    print(f"Suffix array creation time: {suffix_time:.2f} seconds."
+  
+    print(f"Suffix array creation time: {suffix_time:.2f} seconds.")
     print(f"Search time time: {search_time:.2f} seconds.")
 
 if __name__ == "__main__":
