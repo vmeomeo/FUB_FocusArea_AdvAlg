@@ -79,6 +79,39 @@ int main(int argc, char const* const* argv) {
     //          for (pos in search(index, part[p]):
     //              if (verify(ref, query, pos +- ....something)):
     //                  std::cout << "found something\n"
+    for (auto const& query : queries) {
+        size_t query_length = query.size();
+        size_t part_length = query_length / 3;
 
+        // Split the query into 3 parts
+        //auto part1 = query | seqan3::views::slice(0, part_length);
+        //auto part2 = query | seqan3::views::slice(part_length, 2 * part_length);
+        //auto part3 = query | seqan3::views::slice(2 * part_length, query_length);
+	//
+	//
+        std::vector<seqan3::dna5> part1(query.begin(), query.begin() + query.size() / 3);
+        std::vector<seqan3::dna5> part2(query.begin() + query.size() / 3, query.begin() + 2 * query.size() / 3);
+        std::vector<seqan3::dna5> part3(query.begin() + 2 * query.size() / 3, query.end());
+
+        std::vector<std::vector<seqan3::dna5>> parts{part1, part2, part3};
+
+        for (size_t part_idx = 0; part_idx < 3; ++part_idx) {
+            auto search_results = seqan3::search(parts[part_idx], index, cfg);
+
+            for (auto const& result : search_results) {
+                size_t pos = result.reference_begin_position();
+
+                // Verify the full query match
+                size_t start = (part_idx == 0) ? pos : pos - part_idx * part_length;
+                if (start + query_length <= reference[0].size()) { // Ensure valid range
+                    auto ref_subseq = reference[0] | seqan3::views::slice(start, start + query_length);
+
+                    if (std::equal(query.begin(), query.end(), ref_subseq.begin())) {
+                        seqan3::debug_stream << "Query found at position: " << start << "\n";
+                    }
+                }
+            }
+        }
+    }
     return 0;
 }
