@@ -1,6 +1,6 @@
 import argparse
 import gzip
-
+#Willll it work?
 def read_fasta(file_path):
     """Reads sequences from a FASTA file (supports gzip)."""
     sequences = []

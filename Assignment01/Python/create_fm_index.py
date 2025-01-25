@@ -1,6 +1,5 @@
 import iv2py as iv
 import argparse
-import pickle
 
 
 def read_fasta(file_path):
@@ -30,7 +29,9 @@ def main():
         # Read reference and query sequences
         reference_sequences = read_fasta(args.reference)
         fm_index = create_fm_index(reference_sequences)
-        fm_index.save("./fm_index")
+        print("index created")
+        fm_index.save("./fm_index_partial.idx")
+        print("index saved")
 
     except FileNotFoundError as e:
         print(f"Error: {e}")
