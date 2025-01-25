@@ -1,6 +1,5 @@
 import iv2py as iv
 import argparse
-import pickle
 
 def read_fasta(file_path):
     sequence = []
@@ -9,16 +8,17 @@ def read_fasta(file_path):
     return sequence
 
 
-def find_match(query,index):
-    result = index.search(query)
+
+def find_match(query,index,errors):
+    result = index.search(query, k=errors)
     return result
 
 
 
 def load_fm_index(index_path):
     """Load the FM-index from a file."""
-    with open(index_path, "rb") as f:
-        return pickle.load(f)
+    index = iv.fmindex(path=index_path)
+    return index
 
 def main():
     parser = argparse.ArgumentParser(description="FM_index search algorithm for DNA sequences.")
@@ -26,26 +26,21 @@ def main():
                         help="Path to the file containing the fm_index.")
     parser.add_argument("-query", type=str, required=True,
                         help="Path to the file containing the query sequences (FASTA format).")
-    parser.add_argument("-query_ct", type=int, required=True,
-                        help="Number of query sequences to search for.")
+    parser.add_argument("-errors", type=int, required=True,
+                        help="Number of errors in the sequences.")
 
     args = parser.parse_args()
 
     try:
         # Read reference and query sequences
         query_sequences = read_fasta(args.query)
-
-
-
-        # Ensure query count does not exceed available queries
-        if args.query_ct > len(query_sequences):
-            print(f"Error: The specified query count ({args.query_ct}) exceeds the number of queries available ({len(query_sequences)}).")
-            return
+        print("Query read")
         fm_index=load_fm_index(args.index)
+        print("Index loaded")
         # Perform naive search for each query sequence
-        for i in range(args.query_ct):
+        for i in range(10000):
             query = query_sequences[i]
-            positions= find_match(query,fm_index)
+            positions= find_match(query,fm_index,args.errors)
 
             print(f"Positions: {positions}")
 
