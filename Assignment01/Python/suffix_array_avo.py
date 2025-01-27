@@ -4,7 +4,7 @@ import argparse
 import time
 from memory_profiler import memory_usage
 
-# Helper function for reading reference genome
+#Helper function for reading reference genome
 def load_reference(reference_file, fmindex_file):
     """
     Load reference genome and build/load FM-index.
